@@ -46,17 +46,96 @@ const GAIFAREDemo = () => {
   });
 
   const [agents] = useState([
-    { id: 'home', name: 'Smart Home Agent', status: 'active', priority: 'comfort', consumption: 3.5 },
-    { id: 'ev', name: 'EV Charging Agent', status: 'negotiating', priority: 'efficiency', consumption: 7.2 },
-    { id: 'battery', name: 'Battery Storage Agent', status: 'optimizing', priority: 'grid-support', level: 75 },
-    { id: 'solar', name: 'Solar Generation Agent', status: 'active', generation: 4.2 },
-    { id: 'wind', name: 'Wind Generation Agent', status: 'active', generation: 2.8 }
+    { 
+      id: 'home', 
+      name: 'Smart Home Agent', 
+      status: 'active', 
+      priority: 'comfort', 
+      consumption: 3.5,
+      details: {
+        currentTasks: ['Optimizing HVAC schedule', 'Managing appliance load', 'Monitoring occupancy patterns'],
+        performance: { efficiency: 94, uptime: 99.8, decisions: 147 },
+        recentActions: [
+          'Reduced AC by 2°F during peak hours',
+          'Deferred dishwasher start to off-peak',
+          'Adjusted water heater temperature'
+        ],
+        nextScheduled: 'HVAC optimization at 6 PM'
+      }
+    },
+    { 
+      id: 'ev', 
+      name: 'EV Charging Agent', 
+      status: 'negotiating', 
+      priority: 'efficiency', 
+      consumption: 7.2,
+      details: {
+        currentTasks: ['Negotiating charging window', 'Monitoring grid prices', 'Planning route optimization'],
+        performance: { efficiency: 91, uptime: 100, decisions: 89 },
+        recentActions: [
+          'Delayed charging to 11 PM off-peak',
+          'Requested 40 kWh for tomorrow trip',
+          'Calculated optimal charging rate'
+        ],
+        nextScheduled: 'Start charging at 11:00 PM'
+      }
+    },
+    { 
+      id: 'battery', 
+      name: 'Battery Storage Agent', 
+      status: 'optimizing', 
+      priority: 'grid-support', 
+      level: 75,
+      details: {
+        currentTasks: ['Analyzing discharge patterns', 'Grid frequency monitoring', 'Revenue optimization'],
+        performance: { efficiency: 96, uptime: 99.9, decisions: 203 },
+        recentActions: [
+          'Proposed 6 kWh export to grid',
+          'Reserved 7 kWh for home backup',
+          'Adjusted charge rate for grid stability'
+        ],
+        nextScheduled: 'Peak export opportunity at 7 PM'
+      }
+    },
+    { 
+      id: 'solar', 
+      name: 'Solar Generation Agent', 
+      status: 'active', 
+      generation: 4.2,
+      details: {
+        currentTasks: ['Panel angle optimization', 'Weather forecast analysis', 'Maximum power tracking'],
+        performance: { efficiency: 98, uptime: 99.5, decisions: 156 },
+        recentActions: [
+          'Adjusted inverter settings for clouds',
+          'Optimized panel tilt for season',
+          'Predicted 15% generation drop at 4 PM'
+        ],
+        nextScheduled: 'Evening panel cleaning cycle'
+      }
+    },
+    { 
+      id: 'wind', 
+      name: 'Wind Generation Agent', 
+      status: 'active', 
+      generation: 2.8,
+      details: {
+        currentTasks: ['Wind speed monitoring', 'Turbine blade optimization', 'Predictive maintenance'],
+        performance: { efficiency: 89, uptime: 98.7, decisions: 134 },
+        recentActions: [
+          'Adjusted blade pitch for gusts',
+          'Scheduled maintenance for next week',
+          'Coordinated with weather service'
+        ],
+        nextScheduled: 'Maintenance check tomorrow 8 AM'
+      }
+    }
   ]);
 
   const [negotiations, setNegotiations] = useState<Negotiation[]>([]);
   const [aiDecisions, setAiDecisions] = useState<AIDecision[]>([]);
   const [selectedNegotiation, setSelectedNegotiation] = useState<Negotiation | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+  const [selectedAgent, setSelectedAgent] = useState<any | null>(null);
 
   const totalGeneration = energyData.solarGeneration + energyData.windGeneration;
   const totalConsumption = energyData.homeConsumption + energyData.evCharging;
@@ -378,21 +457,114 @@ const GAIFAREDemo = () => {
               </div>
             </div>
 
+            {/* CSS-based flowing dots */}
+            <style dangerouslySetInnerHTML={{__html: `
+              @keyframes flow-solar {
+                0% { left: calc(83% - 4px); top: calc(27% - 4px); }
+                100% { left: calc(58% - 4px); top: calc(47% - 4px); }
+              }
+              @keyframes flow-wind {
+                0% { left: calc(17% - 4px); top: calc(27% - 4px); }
+                100% { left: calc(42% - 4px); top: calc(47% - 4px); }
+              }
+              @keyframes flow-home {
+                0% { left: calc(42% - 4px); top: calc(53% - 4px); }
+                100% { left: calc(17% - 4px); top: calc(78% - 4px); }
+              }
+              @keyframes flow-ev {
+                0% { left: calc(58% - 4px); top: calc(53% - 4px); }
+                100% { left: calc(83% - 4px); top: calc(78% - 4px); }
+              }
+              @keyframes flow-grid-import {
+                0% { left: calc(50% - 4px); top: calc(25% - 4px); }
+                100% { left: calc(50% - 4px); top: calc(35% - 4px); }
+              }
+              @keyframes flow-grid-export {
+                0% { left: calc(50% - 4px); top: calc(35% - 4px); }
+                100% { left: calc(50% - 4px); top: calc(25% - 4px); }
+              }
+              .flow-dot {
+                position: absolute;
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 5;
+              }
+            `}} />
+
+            {/* Animated flow dots - number based on energy intensity */}
+            {energyData.solarGeneration > 0.5 && (
+              <>
+                {Array.from({length: Math.min(Math.max(1, Math.ceil(energyData.solarGeneration / 2)), 4)}, (_, i) => (
+                  <div key={`solar-${i}`} className="flow-dot w-2 h-2 bg-yellow-400 opacity-70" style={{ 
+                    animation: 'flow-solar 2s infinite linear',
+                    animationDelay: `${i * 0.5}s`
+                  }} />
+                ))}
+              </>
+            )}
+
+            {energyData.windGeneration > 0.5 && (
+              <>
+                {Array.from({length: Math.min(Math.max(1, Math.ceil(energyData.windGeneration / 2)), 4)}, (_, i) => (
+                  <div key={`wind-${i}`} className="flow-dot w-2 h-2 bg-blue-400 opacity-70" style={{ 
+                    animation: 'flow-wind 1.8s infinite linear',
+                    animationDelay: `${i * 0.45}s`
+                  }} />
+                ))}
+              </>
+            )}
+
+            {energyData.homeConsumption > 0.5 && (
+              <>
+                {Array.from({length: Math.min(Math.max(1, Math.ceil(energyData.homeConsumption / 2)), 4)}, (_, i) => (
+                  <div key={`home-${i}`} className="flow-dot w-2 h-2 bg-purple-500 opacity-70" style={{ 
+                    animation: 'flow-home 1.5s infinite linear',
+                    animationDelay: `${i * 0.4}s`
+                  }} />
+                ))}
+              </>
+            )}
+
+            {energyData.evCharging > 0.5 && (
+              <>
+                {Array.from({length: Math.min(Math.max(1, Math.ceil(energyData.evCharging / 2)), 5)}, (_, i) => (
+                  <div key={`ev-${i}`} className="flow-dot w-2 h-2 bg-green-400 opacity-70" style={{ 
+                    animation: 'flow-ev 1.6s infinite linear',
+                    animationDelay: `${i * 0.35}s`
+                  }} />
+                ))}
+              </>
+            )}
+
+            {Math.abs(netFlow) > 0.5 && (
+              <>
+                {Array.from({length: Math.min(Math.max(1, Math.ceil(Math.abs(netFlow) / 2)), 5)}, (_, i) => (
+                  <div key={`grid-${i}`} className={`flow-dot w-2 h-2 opacity-70 ${netFlow < 0 ? 'bg-red-400' : 'bg-green-400'}`} style={{ 
+                    animation: `${netFlow < 0 ? 'flow-grid-import' : 'flow-grid-export'} 1.2s infinite linear`,
+                    animationDelay: `${i * 0.3}s`
+                  }} />
+                ))}
+              </>
+            )}
+
             {/* Energy Flow Lines with SVG */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
               <defs>
                 {/* Small arrow markers that don't overwhelm the flow lines */}
                 <marker id="arrow-solar" markerWidth="4" markerHeight="4" refX="3" refY="1.5" orient="auto">
-                  <path d="M0,0 L0,3 L3,1.5 z" fill="#eab308" />
+                  <path d="M0,0 L0,3 L3,1.5 z" fill="#d1d5db" />
                 </marker>
                 <marker id="arrow-wind" markerWidth="4" markerHeight="4" refX="3" refY="1.5" orient="auto">
-                  <path d="M0,0 L0,3 L3,1.5 z" fill="#3b82f6" />
+                  <path d="M0,0 L0,3 L3,1.5 z" fill="#d1d5db" />
                 </marker>
-                <marker id="arrow-battery" markerWidth="4" markerHeight="4" refX="3" refY="1.5" orient="auto">
-                  <path d="M0,0 L0,3 L3,1.5 z" fill="#10b981" />
+                <marker id="arrow-home" markerWidth="4" markerHeight="4" refX="3" refY="1.5" orient="auto">
+                  <path d="M0,0 L0,3 L3,1.5 z" fill="#d1d5db" />
+                </marker>
+                <marker id="arrow-ev" markerWidth="4" markerHeight="4" refX="3" refY="1.5" orient="auto">
+                  <path d="M0,0 L0,3 L3,1.5 z" fill="#d1d5db" />
                 </marker>
                 <marker id="arrow-grid" markerWidth="4" markerHeight="4" refX="3" refY="1.5" orient="auto">
-                  <path d="M0,0 L0,3 L3,1.5 z" fill="#6b7280" />
+                  <path d="M0,0 L0,3 L3,1.5 z" fill="#d1d5db" />
                 </marker>
               </defs>
 
@@ -400,15 +572,13 @@ const GAIFAREDemo = () => {
               {energyData.solarGeneration > 0.5 && (
                 <>
                   <line 
-                    x1="85%" y1="25%" x2="60%" y2="45%" 
-                    stroke="#eab308" 
+                    x1="83%" y1="27%" x2="58%" y2="47%" 
+                    stroke="#d1d5db" 
                     strokeWidth="4"
-                    strokeDasharray="5,5"
-                    className="animate-pulse"
                     markerEnd="url(#arrow-solar)"
-                    opacity="0.8"
+                    opacity="0.5"
                   />
-                  <text x="72%" y="32%" fill="#eab308" fontSize="10" className="font-bold">
+                  <text x="70%" y="35%" fill="#eab308" fontSize="10" className="font-bold">
                     {energyData.solarGeneration.toFixed(1)}kW
                   </text>
                 </>
@@ -418,15 +588,13 @@ const GAIFAREDemo = () => {
               {energyData.windGeneration > 0.5 && (
                 <>
                   <line 
-                    x1="15%" y1="25%" x2="40%" y2="45%" 
-                    stroke="#3b82f6" 
+                    x1="17%" y1="27%" x2="42%" y2="47%" 
+                    stroke="#d1d5db" 
                     strokeWidth="4"
-                    strokeDasharray="5,5"
-                    className="animate-pulse"
                     markerEnd="url(#arrow-wind)"
-                    opacity="0.8"
+                    opacity="0.5"
                   />
-                  <text x="20%" y="32%" fill="#3b82f6" fontSize="10" className="font-bold">
+                  <text x="25%" y="35%" fill="#3b82f6" fontSize="10" className="font-bold">
                     {energyData.windGeneration.toFixed(1)}kW
                   </text>
                 </>
@@ -434,15 +602,13 @@ const GAIFAREDemo = () => {
 
               {/* Battery to Home flow */}
               <line 
-                x1="40%" y1="55%" x2="20%" y2="75%" 
-                stroke="#9333ea" 
+                x1="42%" y1="53%" x2="17%" y2="78%" 
+                stroke="#d1d5db" 
                 strokeWidth="4"
-                strokeDasharray="4,4"
-                className="animate-pulse"
-                markerEnd="url(#arrow-battery)"
-                opacity="0.7"
+                markerEnd="url(#arrow-home)"
+                opacity="0.5"
               />
-              <text x="25%" y="68%" fill="#9333ea" fontSize="10" className="font-bold">
+              <text x="22%" y="70%" fill="#9333ea" fontSize="10" className="font-bold">
                 {energyData.homeConsumption.toFixed(1)}kW
               </text>
 
@@ -450,15 +616,13 @@ const GAIFAREDemo = () => {
               {energyData.evCharging > 1 && (
                 <>
                   <line 
-                    x1="60%" y1="55%" x2="80%" y2="75%" 
-                    stroke="#16a34a" 
+                    x1="58%" y1="53%" x2="83%" y2="78%" 
+                    stroke="#d1d5db" 
                     strokeWidth="4"
-                    strokeDasharray="4,4"
-                    className="animate-pulse"
-                    markerEnd="url(#arrow-battery)"
-                    opacity="0.7"
+                    markerEnd="url(#arrow-ev)"
+                    opacity="0.5"
                   />
-                  <text x="72%" y="68%" fill="#16a34a" fontSize="10" className="font-bold">
+                  <text x="75%" y="70%" fill="#16a34a" fontSize="10" className="font-bold">
                     {energyData.evCharging.toFixed(1)}kW
                   </text>
                 </>
@@ -467,55 +631,52 @@ const GAIFAREDemo = () => {
               {/* Grid connection flow */}
               <line 
                 x1="50%" y1="25%" x2="50%" y2="35%" 
-                stroke={netFlow < 0 ? "#ef4444" : "#10b981"} 
+                stroke="#d1d5db" 
                 strokeWidth="5"
-                strokeDasharray="6,6"
-                className="animate-pulse"
                 markerEnd="url(#arrow-grid)"
-                opacity="0.8"
+                opacity="0.5"
               />
               {Math.abs(netFlow) > 0.5 && (
-                <text x="52%" y="32%" fill={netFlow < 0 ? "#ef4444" : "#10b981"} fontSize="11" className="font-bold">
-                  {netFlow < 0 ? 'Import' : 'Export'} {Math.abs(netFlow).toFixed(1)}kW
+                <text x="55%" y="30%" fill={netFlow < 0 ? "#ef4444" : "#10b981"} fontSize="10" className="font-bold">
+                  {Math.abs(netFlow).toFixed(1)}kW
                 </text>
               )}
 
-              {/* Animated energy particles */}
-              {energyData.solarGeneration > 1 && (
-                <circle r="3" fill="#fbbf24" opacity="0.6">
-                  <animateMotion dur="2s" repeatCount="indefinite">
-                    <path d="M 85% 25% L 60% 45%" />
-                  </animateMotion>
-                </circle>
-              )}
-              
-              {energyData.windGeneration > 1 && (
-                <circle r="3" fill="#60a5fa" opacity="0.6">
-                  <animateMotion dur="1.8s" repeatCount="indefinite">
-                    <path d="M 15% 25% L 40% 45%" />
-                  </animateMotion>
-                </circle>
-              )}
             </svg>
 
-            {/* GAIFARE AI Coordination Indicator - Positioned below the battery */}
+            {/* GAIFARE AI Control Center with integrated live stats */}
             <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2" style={{ zIndex: 2 }}>
-              <div className="bg-white bg-opacity-95 p-3 rounded-full shadow-lg border-2 border-blue-400">
-                <Brain size={20} className="text-blue-600 animate-pulse" />
+              <div className="bg-white bg-opacity-95 rounded shadow-md border border-blue-400 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  {/* AI Icon */}
+                  <div className="flex-shrink-0">
+                    <Brain size={12} className="text-blue-600 animate-pulse" />
+                  </div>
+                  
+                  {/* AI Status and Stats */}
+                  <div>
+                    <div className="text-xs font-bold text-blue-700">GAIFARE AI</div>
+                    
+                    {/* Live Stats */}
+                    <div className="flex gap-3 text-xs mt-1">
+                      <div className="text-center">
+                        <div className="font-semibold text-green-600">{totalGeneration.toFixed(1)}</div>
+                        <div className="text-gray-500 text-xs">Gen</div>
+                      </div>
+                      <div className="text-center">
+                        <div className="font-semibold text-orange-600">{totalConsumption.toFixed(1)}</div>
+                        <div className="text-gray-500 text-xs">Use</div>
+                      </div>
+                      <div className="text-center">
+                        <div className={`font-semibold ${netFlow >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {netFlow >= 0 ? '+' : ''}{netFlow.toFixed(1)}
+                        </div>
+                        <div className="text-gray-500 text-xs">Net</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="text-center mt-1">
-                <div className="text-xs font-bold text-blue-700">GAIFARE AI</div>
-                <div className="text-xs text-gray-600">Coordinating</div>
-              </div>
-            </div>
-
-            {/* Real-time stats overlay */}
-            <div className="absolute top-2 left-2 bg-white bg-opacity-90 rounded p-2 text-xs" style={{ zIndex: 2 }}>
-              <div><strong>Total Gen:</strong> {totalGeneration.toFixed(1)}kW</div>
-              <div><strong>Total Use:</strong> {totalConsumption.toFixed(1)}kW</div>
-              <div><strong>Net Flow:</strong> <span className={netFlow >= 0 ? 'text-green-600' : 'text-red-600'}>
-                {netFlow >= 0 ? '+' : ''}{netFlow.toFixed(1)}kW
-              </span></div>
             </div>
           </div>
         </div>
@@ -530,7 +691,11 @@ const GAIFAREDemo = () => {
             
             <div className="space-y-3">
               {agents.map((agent) => (
-                <div key={agent.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div 
+                  key={agent.id} 
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors border-l-4 border-purple-400"
+                  onClick={() => setSelectedAgent(agent)}
+                >
                   <div>
                     <div className="font-medium">{agent.name}</div>
                     <div className="text-sm text-gray-600 capitalize">
@@ -544,6 +709,7 @@ const GAIFAREDemo = () => {
                       'bg-blue-500'
                     }`}></div>
                     <Wifi size={16} className="text-gray-400" />
+                    <span className="text-xs text-blue-600 font-medium ml-2">Click for details →</span>
                   </div>
                 </div>
               ))}
@@ -875,6 +1041,92 @@ const GAIFAREDemo = () => {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Agent Detail Modal */}
+      {selectedAgent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center">
+                <Settings className="mr-2 text-purple-600" />
+                {selectedAgent.name} Details
+              </h3>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setSelectedAgent(null)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Agent Status Overview */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-purple-600">{selectedAgent.details.performance.efficiency}%</div>
+                  <div className="text-sm text-gray-600">Efficiency</div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-green-600">{selectedAgent.details.performance.uptime}%</div>
+                  <div className="text-sm text-gray-600">Uptime</div>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg text-center">
+                  <div className="text-2xl font-bold text-blue-600">{selectedAgent.details.performance.decisions}</div>
+                  <div className="text-sm text-gray-600">Decisions Made</div>
+                </div>
+              </div>
+
+              {/* Current Tasks */}
+              <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                <h4 className="font-bold text-blue-800 mb-3">🔄 Current Tasks</h4>
+                <ul className="space-y-2">
+                  {selectedAgent.details.currentTasks.map((task: string, index: number) => (
+                    <li key={index} className="flex items-center text-sm text-blue-700">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      {task}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Recent Actions */}
+              <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                <h4 className="font-bold text-green-800 mb-3">✅ Recent Actions</h4>
+                <ul className="space-y-2">
+                  {selectedAgent.details.recentActions.map((action: string, index: number) => (
+                    <li key={index} className="text-sm text-green-700">
+                      <div className="flex items-start">
+                        <span className="text-green-500 mr-2 mt-1">•</span>
+                        {action}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Next Scheduled Action */}
+              <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                <h4 className="font-bold text-yellow-800 mb-2">⏰ Next Scheduled</h4>
+                <p className="text-sm text-yellow-700">{selectedAgent.details.nextScheduled}</p>
+              </div>
+
+              {/* Agent Status Badge */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className={`w-4 h-4 rounded-full mr-3 ${
+                    selectedAgent.status === 'active' ? 'bg-green-500' :
+                    selectedAgent.status === 'negotiating' ? 'bg-yellow-500' :
+                    'bg-blue-500'
+                  }`}></div>
+                  <span className="text-sm text-gray-600 capitalize">
+                    Status: <strong>{selectedAgent.status}</strong> | Priority: <strong>{selectedAgent.priority}</strong>
+                  </span>
                 </div>
               </div>
             </div>
