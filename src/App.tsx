@@ -415,7 +415,9 @@ const GAIFAREDemo = () => {
             GAIFARE Demo
           </h1>
           <p className="text-lg text-gray-600 mb-4">
-            Generative AI For Autonomous Renewable Energy (GAIFARE)
+            <a href="https://github.com/orgs/open-renewable-energy-systems/repositories" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">
+              Generative AI For Autonomous Renewable Energy (GAIFARE)
+            </a>
           </p>
           <div className="bg-white rounded-lg p-4 shadow-md inline-block">
             <p className="text-sm text-gray-500">
