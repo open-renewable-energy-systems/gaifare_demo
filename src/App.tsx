@@ -137,10 +137,28 @@ const GAIFAREDemo = () => {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<any | null>(null);
   const [selectedDecision, setSelectedDecision] = useState<any | null>(null);
+  const [starCount, setStarCount] = useState<number | null>(null);
 
   const totalGeneration = energyData.solarGeneration + energyData.windGeneration;
   const totalConsumption = energyData.homeConsumption + energyData.evCharging;
   const netFlow = totalGeneration - totalConsumption;
+
+  // Fetch GitHub star count
+  useEffect(() => {
+    const fetchStarCount = async () => {
+      try {
+        const response = await fetch('https://api.github.com/repos/open-renewable-energy-systems/gaifare');
+        if (response.ok) {
+          const data = await response.json();
+          setStarCount(data.stargazers_count);
+        }
+      } catch (error) {
+        console.log('Failed to fetch star count:', error);
+      }
+    };
+    
+    fetchStarCount();
+  }, []);
 
   // Simulate real-time updates
   useEffect(() => {
@@ -467,6 +485,25 @@ const GAIFAREDemo = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* GitHub Star Button */}
+        <div className="text-center mb-6">
+          <a 
+            href="https://github.com/open-renewable-energy-systems/gaifare" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg shadow-lg transition-colors duration-200 inline-flex items-center gap-3 text-base font-medium"
+          >
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 3C6.13 3 3 6.13 3 10c0 3.09 2.01 5.72 4.78 6.65.35.06.48-.15.48-.33v-1.15c-1.94.42-2.35-.93-2.35-.93-.32-.81-.78-1.03-.78-1.03-.63-.43.05-.42.05-.42.7.05 1.07.72 1.07.72.62 1.07 1.64.76 2.04.58.06-.45.24-.76.44-.93-1.55-.18-3.18-.78-3.18-3.45 0-.76.27-1.38.72-1.87-.07-.18-.31-.89.07-1.85 0 0 .59-.19 1.93.72.56-.16 1.16-.24 1.76-.24s1.2.08 1.76.24c1.34-.91 1.93-.72 1.93-.72.38.96.14 1.67.07 1.85.45.49.72 1.11.72 1.87 0 2.68-1.63 3.27-3.18 3.45.25.22.47.64.47 1.29v1.91c0 .18.13.39.48.33C15.99 15.72 18 13.09 18 10c0-3.87-3.13-7-7-7z" clipRule="evenodd" />
+            </svg>
+            <span>⭐ Star GAIFARE on GitHub</span>
+            {starCount !== null && (
+              <span className="bg-gray-600 px-3 py-1 rounded-full text-sm font-bold">{starCount}</span>
+            )}
+          </a>
+          <p className="text-sm text-gray-500 mt-2">Support the project by giving it a star!</p>
         </div>
 
         {/* Live Energy Flow Network */}
