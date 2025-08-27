@@ -136,6 +136,7 @@ const GAIFAREDemo = () => {
   const [selectedNegotiation, setSelectedNegotiation] = useState<Negotiation | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<any | null>(null);
+  const [selectedDecision, setSelectedDecision] = useState<any | null>(null);
 
   const totalGeneration = energyData.solarGeneration + energyData.windGeneration;
   const totalConsumption = energyData.homeConsumption + energyData.evCharging;
@@ -282,20 +283,118 @@ const GAIFAREDemo = () => {
 
       // Simulate AI decisions
       if (Math.random() < 0.4) {
-        const decisions = [
-          'Optimized solar panel orientation for 12% efficiency gain',
-          'Scheduled EV charging during low-cost period (2-6 AM)',
-          'Battery discharge authorized for peak grid support',
-          'Home HVAC adjusted based on occupancy prediction',
-          'Wind turbine maintenance scheduled during low-wind forecast',
-          'Microgrid formed with 3 neighboring homes'
+        const decisionTypes = [
+          {
+            decision: 'Optimized solar panel orientation for 12% efficiency gain',
+            details: {
+              title: 'Solar Panel Optimization',
+              description: 'AI analyzed sun path and weather patterns to optimize panel positioning',
+              analysis: 'Historical data shows 15° tilt adjustment increases daily energy capture by 12.3%',
+              implementation: [
+                'Automated tilt system engaged at 6:45 AM',
+                'Panel tracking algorithm updated with seasonal adjustments',
+                'Expected increase: 2.1 kWh/day average'
+              ],
+              agent: 'Solar Generation Agent',
+              confidence: '94%',
+              energySaved: '2.1 kWh/day',
+              costSaved: '$0.31/day'
+            }
+          },
+          {
+            decision: 'Scheduled EV charging during low-cost period (2-6 AM)',
+            details: {
+              title: 'Smart EV Charging Schedule',
+              description: 'AI optimized charging window based on grid pricing and user needs',
+              analysis: 'Off-peak rates ($0.08/kWh vs $0.18/kWh peak) identified for 2-6 AM window',
+              implementation: [
+                'EV charging delayed until 2:00 AM automatically',
+                'Fast charging rate (7.2kW) utilized during off-peak',
+                'Vehicle ready by 7:00 AM as requested'
+              ],
+              agent: 'EV Charging Agent',
+              confidence: '96%',
+              energySaved: '40 kWh optimally scheduled',
+              costSaved: '$4.00 per charge cycle'
+            }
+          },
+          {
+            decision: 'Battery discharge authorized for peak grid support',
+            details: {
+              title: 'Grid Support Revenue Optimization',
+              description: 'Battery discharge during peak hours generates revenue while supporting grid stability',
+              analysis: 'Grid stress detected, peak rate $0.22/kWh available for 2-hour window',
+              implementation: [
+                '8 kWh discharged during 4-6 PM peak period',
+                'Home consumption prioritized from solar generation',
+                'Grid export earned $1.76 in revenue'
+              ],
+              agent: 'Battery Storage Agent',
+              confidence: '91%',
+              energySaved: 'Grid stability improved',
+              costSaved: '+$1.76 revenue generated'
+            }
+          },
+          {
+            decision: 'Home HVAC adjusted based on occupancy prediction',
+            details: {
+              title: 'Predictive HVAC Optimization',
+              description: 'AI predicted home occupancy patterns and pre-conditioned accordingly',
+              analysis: 'Occupancy model shows family returns at 5:30 PM, pre-cooling initiated at 4:45 PM',
+              implementation: [
+                'Temperature reduced to 72°F at 4:45 PM',
+                'Avoided peak-time cooling load from 5:30-7:00 PM',
+                'Comfort maintained while reducing grid demand'
+              ],
+              agent: 'Smart Home Agent',
+              confidence: '89%',
+              energySaved: '1.8 kWh avoided during peak',
+              costSaved: '$0.32 peak rate avoidance'
+            }
+          },
+          {
+            decision: 'Wind turbine maintenance scheduled during low-wind forecast',
+            details: {
+              title: 'Predictive Maintenance Scheduling',
+              description: 'AI scheduled maintenance during forecasted low-wind period to minimize generation loss',
+              analysis: 'Weather model predicts 3-day low-wind period starting tomorrow, ideal for maintenance',
+              implementation: [
+                'Maintenance window: Tuesday 9 AM - Friday 2 PM',
+                'Expected generation loss minimized to 2.1 kWh',
+                'Service team notified and scheduled'
+              ],
+              agent: 'Wind Generation Agent',
+              confidence: '87%',
+              energySaved: '12.3 kWh loss avoided vs peak-wind maintenance',
+              costSaved: '$1.85 opportunity cost minimized'
+            }
+          },
+          {
+            decision: 'Microgrid formed with 3 neighboring homes',
+            details: {
+              title: 'Dynamic Microgrid Formation',
+              description: 'AI coordinated with neighboring homes to form temporary microgrid for mutual benefit',
+              analysis: 'Neighbors have excess solar (4.2 kWh) while local demand exceeds generation',
+              implementation: [
+                'Peer-to-peer energy sharing activated',
+                'Local energy trading at $0.14/kWh (vs $0.18 grid rate)',
+                'All homes benefit from reduced grid dependency'
+              ],
+              agent: 'Grid Integration Agent',
+              confidence: '93%',
+              energySaved: '6.8 kWh shared locally',
+              costSaved: '$0.27 for all participants'
+            }
+          }
         ];
         
+        const selectedDecision = decisionTypes[Math.floor(Math.random() * decisionTypes.length)];
         const newDecision = {
           id: Date.now(),
-          decision: decisions[Math.floor(Math.random() * decisions.length)],
+          decision: selectedDecision.decision,
           timestamp: new Date(),
-          impact: '+' + (Math.random() * 15 + 5).toFixed(1) + '% efficiency'
+          impact: '+' + (Math.random() * 15 + 5).toFixed(1) + '% efficiency',
+          details: selectedDecision.details
         };
         
         setAiDecisions(prev => [newDecision, ...prev.slice(0, 4)]);
@@ -316,7 +415,7 @@ const GAIFAREDemo = () => {
             GAIFARE Demo
           </h1>
           <p className="text-lg text-gray-600 mb-4">
-            Generative AI For Autonomous Renewable Energy Systems
+            Generative AI For Autonomous Renewable Energy (GAIFARE)
           </p>
           <div className="bg-white rounded-lg p-4 shadow-md inline-block">
             <p className="text-sm text-gray-500">
@@ -722,17 +821,22 @@ const GAIFAREDemo = () => {
               Recent AI Decisions
             </h2>
             
-            <div className="space-y-3 max-h-64 overflow-y-auto">
+            <div className="space-y-3 max-h-96 overflow-y-auto">
               {aiDecisions.length === 0 ? (
                 <p className="text-gray-500 text-sm">No recent AI decisions</p>
               ) : (
                 aiDecisions.map((decision) => (
-                  <div key={decision.id} className="p-3 bg-indigo-50 rounded-lg">
+                  <div 
+                    key={decision.id} 
+                    className="p-3 bg-indigo-50 rounded-lg cursor-pointer hover:bg-indigo-100 transition-colors border-l-4 border-indigo-400"
+                    onClick={() => setSelectedDecision(decision)}
+                  >
                     <div className="text-sm font-medium">{decision.decision}</div>
                     <div className="flex justify-between text-xs text-gray-600 mt-1">
                       <span>{decision.timestamp.toLocaleTimeString()}</span>
                       <span className="font-medium text-green-600">{decision.impact}</span>
                     </div>
+                    <div className="text-xs text-blue-600 font-medium mt-1">Click for details →</div>
                   </div>
                 ))
               )}
@@ -793,10 +897,10 @@ const GAIFAREDemo = () => {
             <div>
               <h4 className="font-medium mb-2">Project Status</h4>
               <ul className="space-y-1 text-gray-300">
-                <li>• Part of LF Energy ORES</li>
-                <li>• Open source development</li>
+                <li>• Part of LF Energy <a href="https://lfenergy.org/projects/ores-open-renewable-energy-systems/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">ORES</a></li>
                 <li>• Early incubation phase</li>
                 <li>• Community contributions welcome</li>
+                <li>• <a href="https://github.com/open-renewable-energy-systems" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">GitHub Repository</a></li>
               </ul>
             </div>
           </div>
@@ -1127,6 +1231,80 @@ const GAIFAREDemo = () => {
                   <span className="text-sm text-gray-600 capitalize">
                     Status: <strong>{selectedAgent.status}</strong> | Priority: <strong>{selectedAgent.priority}</strong>
                   </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Decision Detail Modal */}
+      {selectedDecision && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-800 flex items-center">
+                <Brain className="mr-2 text-indigo-600" />
+                {selectedDecision.details.title}
+              </h3>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setSelectedDecision(null)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              {/* Decision Overview */}
+              <div className="bg-indigo-50 p-4 rounded-lg border-l-4 border-indigo-400">
+                <h4 className="font-bold text-indigo-800 mb-2">🎯 Decision Overview</h4>
+                <p className="text-sm text-indigo-700 mb-3">{selectedDecision.details.description}</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                  <div className="bg-white p-3 rounded-lg text-center">
+                    <div className="text-lg font-bold text-indigo-600">{selectedDecision.details.confidence}</div>
+                    <div className="text-xs text-gray-600">Confidence</div>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg text-center">
+                    <div className="text-lg font-bold text-green-600">{selectedDecision.details.energySaved}</div>
+                    <div className="text-xs text-gray-600">Energy Impact</div>
+                  </div>
+                  <div className="bg-white p-3 rounded-lg text-center">
+                    <div className="text-lg font-bold text-blue-600">{selectedDecision.details.costSaved}</div>
+                    <div className="text-xs text-gray-600">Cost Impact</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI Analysis */}
+              <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                <h4 className="font-bold text-blue-800 mb-3">🧠 AI Analysis</h4>
+                <p className="text-sm text-blue-700">{selectedDecision.details.analysis}</p>
+              </div>
+
+              {/* Implementation Steps */}
+              <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                <h4 className="font-bold text-green-800 mb-3">⚙️ Implementation Steps</h4>
+                <ul className="space-y-2">
+                  {selectedDecision.details.implementation.map((step: string, index: number) => (
+                    <li key={index} className="flex items-start text-sm text-green-700">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3 mt-2"></div>
+                      {step}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Responsible Agent */}
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-indigo-500 rounded-full mr-3"></div>
+                  <span className="text-sm text-gray-600">
+                    Executed by: <strong>{selectedDecision.details.agent}</strong>
+                  </span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  {selectedDecision.timestamp.toLocaleString()}
                 </div>
               </div>
             </div>
