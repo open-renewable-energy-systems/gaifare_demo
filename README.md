@@ -99,6 +99,21 @@ The demo features several intelligent agents:
 - **Solar Generation Agent** - Manages solar panel performance and maintenance
 - **Wind Generation Agent** - Optimizes wind turbine operations
 
+### Demo vs. Production Architecture
+
+**🖥️ Current Demo Implementation:**
+- Frontend simulation running in your browser
+- Agents are React components with simulated behaviors
+- No real hardware integration (demonstration purposes)
+
+**🏭 Real GAIFARE Deployment:**
+- **Edge Devices**: Agents run on local hardware (home energy controllers, smart inverters, IoT gateways)
+- **Hybrid Architecture**: Edge handles real-time decisions, cloud manages complex negotiations
+- **Distributed Network**: Agent-to-agent communication across neighboring homes
+- **Benefits**: Low latency, privacy protection, resilience during outages, local autonomy
+
+The demo showcases the intelligent behaviors and decision-making concepts that would be deployed on actual edge devices in production systems.
+
 ## 🔧 Technology Stack
 
 - **React 19** - Frontend framework
