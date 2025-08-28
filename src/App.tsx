@@ -766,9 +766,12 @@ const GAIFAREDemo = () => {
                 </>
               )}
 
-              {/* Grid connection flow */}
+              {/* Grid connection flow - direction changes based on import/export */}
               <line 
-                x1="50%" y1="25%" x2="50%" y2="35%" 
+                x1="50%" 
+                y1={netFlow < 0 ? "25%" : "35%"} 
+                x2="50%" 
+                y2={netFlow < 0 ? "35%" : "25%"} 
                 stroke="#d1d5db" 
                 strokeWidth="5"
                 markerEnd="url(#arrow-grid)"
