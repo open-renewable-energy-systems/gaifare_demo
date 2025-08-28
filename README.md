@@ -149,4 +149,4 @@ For questions or support:
 
 ---
 
-## Built with ❤️ for sustainable energy futures
+**Built with ❤️ for sustainable energy futures!**
