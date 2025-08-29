@@ -138,10 +138,12 @@ const GAIFAREDemo = () => {
   const [selectedAgent, setSelectedAgent] = useState<any | null>(null);
   const [selectedDecision, setSelectedDecision] = useState<any | null>(null);
   const [starCount, setStarCount] = useState<number | null>(null);
+  const [selectedEnergyComponent, setSelectedEnergyComponent] = useState<string | null>(null);
 
   const totalGeneration = energyData.solarGeneration + energyData.windGeneration;
   const totalConsumption = energyData.homeConsumption + energyData.evCharging;
   const netFlow = totalGeneration - totalConsumption;
+
 
   // Fetch GitHub star count
   useEffect(() => {
@@ -518,7 +520,10 @@ const GAIFAREDemo = () => {
             
             {/* Grid Connection - Top Center */}
             <div className="absolute top-4 left-1/2 transform -translate-x-1/2">
-              <div className="bg-gray-600 text-white p-3 rounded-lg text-center shadow-lg min-w-24">
+              <div 
+                className="bg-gray-600 text-white p-3 rounded-lg text-center shadow-lg min-w-24 cursor-pointer hover:bg-gray-500 transition-colors"
+                onClick={() => setSelectedEnergyComponent('grid')}
+              >
                 <div className="font-bold text-sm">⚡ GRID</div>
                 <div className="text-xs">${energyData.gridPrice.toFixed(3)}/kWh</div>
                 <div className="text-xs font-semibold">
@@ -533,7 +538,10 @@ const GAIFAREDemo = () => {
 
             {/* Solar Panel - Top Right */}
             <div className="absolute top-4 right-4">
-              <div className="bg-yellow-500 text-white p-3 rounded-lg text-center shadow-lg min-w-20">
+              <div 
+                className="bg-yellow-500 text-white p-3 rounded-lg text-center shadow-lg min-w-20 cursor-pointer hover:bg-yellow-400 transition-colors"
+                onClick={() => setSelectedEnergyComponent('solar')}
+              >
                 <Sun size={20} className="mx-auto mb-1" />
                 <div className="font-bold text-sm">SOLAR</div>
                 <div className="text-xs">{energyData.solarGeneration.toFixed(1)} kW</div>
@@ -545,7 +553,10 @@ const GAIFAREDemo = () => {
 
             {/* Wind Turbine - Top Left */}
             <div className="absolute top-4 left-4">
-              <div className="bg-blue-500 text-white p-3 rounded-lg text-center shadow-lg min-w-20">
+              <div 
+                className="bg-blue-500 text-white p-3 rounded-lg text-center shadow-lg min-w-20 cursor-pointer hover:bg-blue-400 transition-colors"
+                onClick={() => setSelectedEnergyComponent('wind')}
+              >
                 <Wind size={20} className="mx-auto mb-1" />
                 <div className="font-bold text-sm">WIND</div>
                 <div className="text-xs">{energyData.windGeneration.toFixed(1)} kW</div>
@@ -557,10 +568,12 @@ const GAIFAREDemo = () => {
 
             {/* Battery Storage - Center Hub */}
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <div className={`p-4 rounded-lg text-center shadow-lg text-white min-w-24 ${
+              <div className={`p-4 rounded-lg text-center shadow-lg text-white min-w-24 cursor-pointer hover:opacity-80 transition-opacity ${
                 energyData.batteryLevel > 60 ? 'bg-green-500' : 
                 energyData.batteryLevel > 30 ? 'bg-yellow-500' : 'bg-red-500'
-              }`}>
+              }`}
+                onClick={() => setSelectedEnergyComponent('battery')}
+              >
                 <Battery size={24} className="mx-auto mb-1" />
                 <div className="font-bold text-sm">BATTERY</div>
                 <div className="text-xs">{energyData.batteryLevel.toFixed(0)}%</div>
@@ -573,7 +586,10 @@ const GAIFAREDemo = () => {
 
             {/* Home - Bottom Left */}
             <div className="absolute bottom-4 left-4">
-              <div className="bg-purple-600 text-white p-3 rounded-lg text-center shadow-lg min-w-20">
+              <div 
+                className="bg-purple-600 text-white p-3 rounded-lg text-center shadow-lg min-w-20 cursor-pointer hover:bg-purple-500 transition-colors"
+                onClick={() => setSelectedEnergyComponent('home')}
+              >
                 <Home size={20} className="mx-auto mb-1" />
                 <div className="font-bold text-sm">HOME</div>
                 <div className="text-xs">{energyData.homeConsumption.toFixed(1)} kW</div>
@@ -585,7 +601,10 @@ const GAIFAREDemo = () => {
 
             {/* EV Charger - Bottom Right */}
             <div className="absolute bottom-4 right-4">
-              <div className="bg-green-600 text-white p-3 rounded-lg text-center shadow-lg min-w-20">
+              <div 
+                className="bg-green-600 text-white p-3 rounded-lg text-center shadow-lg min-w-20 cursor-pointer hover:bg-green-500 transition-colors"
+                onClick={() => setSelectedEnergyComponent('ev')}
+              >
                 <Car size={20} className="mx-auto mb-1" />
                 <div className="font-bold text-sm">EV</div>
                 <div className="text-xs">{energyData.evCharging.toFixed(1)} kW</div>
@@ -850,7 +869,6 @@ const GAIFAREDemo = () => {
                       'bg-blue-500'
                     }`}></div>
                     <Wifi size={16} className="text-gray-400" />
-                    <span className="text-xs text-blue-600 font-medium ml-2">Click for details →</span>
                   </div>
                 </div>
               ))}
@@ -878,7 +896,6 @@ const GAIFAREDemo = () => {
                       <span>{decision.timestamp.toLocaleTimeString()}</span>
                       <span className="font-medium text-green-600">{decision.impact}</span>
                     </div>
-                    <div className="text-xs text-blue-600 font-medium mt-1">Click for details →</div>
                   </div>
                 ))
               )}
@@ -904,9 +921,8 @@ const GAIFAREDemo = () => {
                   onClick={() => setSelectedNegotiation(neg)}
                 >
                   <div className="text-sm font-medium">{neg.message}</div>
-                  <div className="text-xs text-gray-600 mt-1 flex justify-between">
+                  <div className="text-xs text-gray-600 mt-1">
                     <span>{neg.timestamp.toLocaleTimeString()} | {neg.participants} participating agents</span>
-                    <span className="text-blue-600 font-medium">Click for details →</span>
                   </div>
                 </div>
               ))
@@ -1349,6 +1365,413 @@ const GAIFAREDemo = () => {
                   {selectedDecision.timestamp.toLocaleString()}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Energy Component Detail Modals */}
+      {selectedEnergyComponent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center">
+                  {selectedEnergyComponent === 'grid' && (
+                    <>
+                      <Zap className="mr-2 text-gray-600" />
+                      Grid Connection Details
+                    </>
+                  )}
+                  {selectedEnergyComponent === 'solar' && (
+                    <>
+                      <Sun className="mr-2 text-yellow-500" />
+                      Solar Panel Details
+                    </>
+                  )}
+                  {selectedEnergyComponent === 'wind' && (
+                    <>
+                      <Wind className="mr-2 text-blue-500" />
+                      Wind Turbine Details
+                    </>
+                  )}
+                  {selectedEnergyComponent === 'battery' && (
+                    <>
+                      <Battery className="mr-2 text-green-500" />
+                      Battery Storage Details
+                    </>
+                  )}
+                  {selectedEnergyComponent === 'home' && (
+                    <>
+                      <Home className="mr-2 text-purple-600" />
+                      Home Energy Details
+                    </>
+                  )}
+                  {selectedEnergyComponent === 'ev' && (
+                    <>
+                      <Car className="mr-2 text-green-600" />
+                      EV Charging Details
+                    </>
+                  )}
+                </h2>
+                <button 
+                  onClick={() => setSelectedEnergyComponent(null)}
+                  className="text-gray-500 hover:text-gray-700 text-xl font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Grid Details */}
+              {selectedEnergyComponent === 'grid' && (
+                <div className="space-y-6">
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h3 className="font-bold text-gray-800 mb-3">⚡ Current Grid Status</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-gray-600">${energyData.gridPrice.toFixed(3)}/kWh</div>
+                        <div className="text-sm text-gray-500">Current Price</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className={`text-2xl font-bold ${
+                          netFlow < 0 ? 'text-red-600' : 'text-green-600'
+                        }`}>
+                          {netFlow < 0 ? `Import ${Math.abs(netFlow).toFixed(1)}` : `Export ${netFlow.toFixed(1)}`} kW
+                        </div>
+                        <div className="text-sm text-gray-500">Power Flow</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 className="font-bold text-blue-800 mb-2">📊 Time-of-Use Pricing</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Peak (4-9 PM):</span>
+                        <span className="font-mono text-blue-800">$0.18-0.26/kWh</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Mid-Peak (6 AM-4 PM):</span>
+                        <span className="font-mono text-blue-800">$0.12-0.16/kWh</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-blue-700">Off-Peak (9 PM-6 AM):</span>
+                        <span className="font-mono text-blue-800">$0.06-0.10/kWh</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                    <h4 className="font-bold text-yellow-800 mb-2">🤖 AI Grid Optimization</h4>
+                    <ul className="space-y-1 text-sm text-yellow-700">
+                      <li>• Automatic load shifting to off-peak hours</li>
+                      <li>• Peak demand shaving to reduce costs</li>
+                      <li>• Grid support through battery discharge</li>
+                      <li>• Real-time price monitoring and response</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Solar Details */}
+              {selectedEnergyComponent === 'solar' && (
+                <div className="space-y-6">
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h3 className="font-bold text-yellow-800 mb-3">☀️ Solar Generation Status</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-yellow-600">{energyData.solarGeneration.toFixed(1)} kW</div>
+                        <div className="text-sm text-gray-500">Current Output</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-yellow-600">
+                          {energyData.solarGeneration > 5 ? "Peak" : energyData.solarGeneration > 2 ? "Good" : "Low"}
+                        </div>
+                        <div className="text-sm text-gray-500">Performance</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <h4 className="font-bold text-green-800 mb-2">📈 Daily Performance Forecast</h4>
+                    <div className="space-y-2 text-sm text-green-700">
+                      <div className="flex justify-between">
+                        <span>Peak Generation (12-2 PM):</span>
+                        <span className="font-mono">7.2-8.5 kW</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Expected Daily Total:</span>
+                        <span className="font-mono">45-55 kWh</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Weather Condition:</span>
+                        <span className="capitalize">{energyData.weatherCondition}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 className="font-bold text-blue-800 mb-2">🤖 AI Solar Optimization</h4>
+                    <ul className="space-y-1 text-sm text-blue-700">
+                      <li>• Real-time panel angle adjustment</li>
+                      <li>• Cloud detection and power prediction</li>
+                      <li>• Maximum Power Point Tracking (MPPT)</li>
+                      <li>• Seasonal tilt optimization</li>
+                      <li>• Dust detection and cleaning scheduling</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Wind Details */}
+              {selectedEnergyComponent === 'wind' && (
+                <div className="space-y-6">
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h3 className="font-bold text-blue-800 mb-3">💨 Wind Generation Status</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-blue-600">{energyData.windGeneration.toFixed(1)} kW</div>
+                        <div className="text-sm text-gray-500">Current Output</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-blue-600">
+                          {energyData.windGeneration > 4 ? "Strong" : energyData.windGeneration > 2 ? "Steady" : "Light"}
+                        </div>
+                        <div className="text-sm text-gray-500">Wind Conditions</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <h4 className="font-bold text-green-800 mb-2">🌪️ Wind Performance Metrics</h4>
+                    <div className="space-y-2 text-sm text-green-700">
+                      <div className="flex justify-between">
+                        <span>Estimated Wind Speed:</span>
+                        <span className="font-mono">12-18 mph</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Turbine Efficiency:</span>
+                        <span className="font-mono">89%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Daily Generation Estimate:</span>
+                        <span className="font-mono">25-35 kWh</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
+                    <h4 className="font-bold text-purple-800 mb-2">🤖 AI Wind Optimization</h4>
+                    <ul className="space-y-1 text-sm text-purple-700">
+                      <li>• Automatic blade pitch adjustment</li>
+                      <li>• Wind direction tracking and optimization</li>
+                      <li>• Predictive maintenance scheduling</li>
+                      <li>• Weather forecast integration</li>
+                      <li>• Turbulence detection and mitigation</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Battery Details */}
+              {selectedEnergyComponent === 'battery' && (
+                <div className="space-y-6">
+                  <div className={`p-4 rounded-lg ${
+                    energyData.batteryLevel > 60 ? 'bg-green-50' : 
+                    energyData.batteryLevel > 30 ? 'bg-yellow-50' : 'bg-red-50'
+                  }`}>
+                    <h3 className={`font-bold mb-3 ${
+                      energyData.batteryLevel > 60 ? 'text-green-800' : 
+                      energyData.batteryLevel > 30 ? 'text-yellow-800' : 'text-red-800'
+                    }`}>🔋 Battery Status</h3>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className={`text-2xl font-bold ${
+                          energyData.batteryLevel > 60 ? 'text-green-600' : 
+                          energyData.batteryLevel > 30 ? 'text-yellow-600' : 'text-red-600'
+                        }`}>{energyData.batteryLevel.toFixed(0)}%</div>
+                        <div className="text-sm text-gray-500">Charge Level</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-blue-600">25 kWh</div>
+                        <div className="text-sm text-gray-500">Total Capacity</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-purple-600">
+                          {netFlow > 0 && energyData.batteryLevel < 90 ? 'Charging' : 
+                           netFlow < 0 && energyData.batteryLevel > 20 ? 'Discharging' : 'Standby'}
+                        </div>
+                        <div className="text-sm text-gray-500">Current Mode</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 className="font-bold text-blue-800 mb-2">⚡ Battery Performance</h4>
+                    <div className="space-y-2 text-sm text-blue-700">
+                      <div className="flex justify-between">
+                        <span>Charge/Discharge Rate:</span>
+                        <span className="font-mono">Up to 10 kW</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Round-trip Efficiency:</span>
+                        <span className="font-mono">96%</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Cycle Count:</span>
+                        <span className="font-mono">1,247 / 8,000</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Expected Lifespan:</span>
+                        <span className="font-mono">12+ years</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <h4 className="font-bold text-green-800 mb-2">🤖 AI Battery Management</h4>
+                    <ul className="space-y-1 text-sm text-green-700">
+                      <li>• Dynamic charge/discharge scheduling</li>
+                      <li>• Grid arbitrage for revenue generation</li>
+                      <li>• Backup power priority management</li>
+                      <li>• Battery health optimization</li>
+                      <li>• Temperature and safety monitoring</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Home Details */}
+              {selectedEnergyComponent === 'home' && (
+                <div className="space-y-6">
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h3 className="font-bold text-purple-800 mb-3">🏠 Home Energy Consumption</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-purple-600">{energyData.homeConsumption.toFixed(1)} kW</div>
+                        <div className="text-sm text-gray-500">Current Usage</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-purple-600">
+                          {energyData.homeConsumption > 4 ? "High" : energyData.homeConsumption > 2.5 ? "Normal" : "Low"}
+                        </div>
+                        <div className="text-sm text-gray-500">Usage Level</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 className="font-bold text-blue-800 mb-2">📊 Energy Breakdown</h4>
+                    <div className="space-y-2 text-sm text-blue-700">
+                      <div className="flex justify-between items-center">
+                        <span>HVAC System:</span>
+                        <div className="flex items-center">
+                          <div className="w-20 h-2 bg-blue-200 rounded mr-2">
+                            <div className="w-3/5 h-2 bg-blue-500 rounded"></div>
+                          </div>
+                          <span className="font-mono">1.8 kW</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Water Heater:</span>
+                        <div className="flex items-center">
+                          <div className="w-20 h-2 bg-blue-200 rounded mr-2">
+                            <div className="w-1/4 h-2 bg-blue-500 rounded"></div>
+                          </div>
+                          <span className="font-mono">0.6 kW</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Appliances:</span>
+                        <div className="flex items-center">
+                          <div className="w-20 h-2 bg-blue-200 rounded mr-2">
+                            <div className="w-2/5 h-2 bg-blue-500 rounded"></div>
+                          </div>
+                          <span className="font-mono">0.8 kW</span>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span>Lighting & Electronics:</span>
+                        <div className="flex items-center">
+                          <div className="w-20 h-2 bg-blue-200 rounded mr-2">
+                            <div className="w-1/5 h-2 bg-blue-500 rounded"></div>
+                          </div>
+                          <span className="font-mono">0.3 kW</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
+                    <h4 className="font-bold text-green-800 mb-2">🤖 AI Home Optimization</h4>
+                    <ul className="space-y-1 text-sm text-green-700">
+                      <li>• Occupancy-based HVAC scheduling</li>
+                      <li>• Smart appliance load shifting</li>
+                      <li>• Water heater temperature optimization</li>
+                      <li>• Automated demand response</li>
+                      <li>• Energy usage pattern learning</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* EV Details */}
+              {selectedEnergyComponent === 'ev' && (
+                <div className="space-y-6">
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h3 className="font-bold text-green-800 mb-3">🚗 EV Charging Status</h3>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-green-600">{energyData.evCharging.toFixed(1)} kW</div>
+                        <div className="text-sm text-gray-500">Charging Rate</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-green-600">78%</div>
+                        <div className="text-sm text-gray-500">Battery Level</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-lg text-center">
+                        <div className="text-2xl font-bold text-green-600">
+                          {energyData.evCharging > 6 ? "Fast" : energyData.evCharging > 3 ? "Normal" : "Slow"}
+                        </div>
+                        <div className="text-sm text-gray-500">Charge Mode</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-400">
+                    <h4 className="font-bold text-blue-800 mb-2">🔋 Vehicle Information</h4>
+                    <div className="space-y-2 text-sm text-blue-700">
+                      <div className="flex justify-between">
+                        <span>Battery Capacity:</span>
+                        <span className="font-mono">75 kWh</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Range Remaining:</span>
+                        <span className="font-mono">234 miles</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Charge Completion:</span>
+                        <span className="font-mono">2:30 AM (off-peak)</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Next Trip:</span>
+                        <span className="font-mono">7:00 AM (45 miles)</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                    <h4 className="font-bold text-yellow-800 mb-2">🤖 AI Charging Optimization</h4>
+                    <ul className="space-y-1 text-sm text-yellow-700">
+                      <li>• Off-peak charging scheduling</li>
+                      <li>• Route planning and range optimization</li>
+                      <li>• Grid-friendly charging rates</li>
+                      <li>• Vehicle-to-grid (V2G) capability</li>
+                      <li>• Smart pre-conditioning</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
